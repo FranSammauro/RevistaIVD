@@ -1,7 +1,7 @@
 'use client'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { LogIn, Eye, EyeOff } from 'lucide-react'
+import { LogIn, Eye, EyeOff, AlertCircle, CheckCircle } from 'lucide-react'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -32,126 +32,94 @@ export default function LoginPage() {
     }
   }
 
+  const inputStyle = {
+    width: '100%', padding: '0.875rem 1rem', fontSize: '0.9375rem', fontFamily: 'var(--font-body)',
+    background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 'var(--radius-md)',
+    color: 'white', outline: 'none', transition: 'all var(--transition-fast)',
+  }
+
   return (
     <div style={{
-      minHeight: '100vh', background: 'var(--ivd-black)',
+      minHeight: '100dvh',
+      background: 'var(--ivd-black)',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
-      padding: '2rem', position: 'relative', overflow: 'hidden',
+      padding: 'var(--space-xl) var(--container-padding)', position: 'relative', overflow: 'hidden',
     }}>
-      {/* Grid background */}
-      <div style={{
-        position: 'absolute', inset: 0,
-        backgroundImage: 'linear-gradient(rgba(200,16,46,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(200,16,46,0.06) 1px, transparent 1px)',
-        backgroundSize: '60px 60px',
-      }} />
+      <div className="bg-grid" style={{ position: 'absolute', inset: 0, opacity: 0.04, pointerEvents: 'none' }} aria-hidden="true" />
       <div style={{
         position: 'absolute', top: '30%', left: '50%', transform: 'translate(-50%, -50%)',
         width: 500, height: 500, borderRadius: '50%',
-        background: 'radial-gradient(circle, rgba(200,16,46,0.1) 0%, transparent 70%)',
+        background: 'radial-gradient(circle, rgba(200,16,46,0.12) 0%, transparent 70%)',
         pointerEvents: 'none',
-      }} />
+      }} aria-hidden="true" />
 
-      <div style={{
-        background: 'rgba(255,255,255,0.04)',
-        border: '1px solid rgba(255,255,255,0.1)',
-        borderRadius: 20, padding: '3rem',
-        width: '100%', maxWidth: 420,
-        backdropFilter: 'blur(12px)',
-        position: 'relative', zIndex: 1,
+      <div className="glass-dark" style={{
+        width: '100%', maxWidth: 420, padding: 'var(--space-2xl)', borderRadius: 'var(--radius-xl)',
+        border: '1px solid rgba(200,16,46,0.15)', position: 'relative', zIndex: 1,
+        backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)',
       }}>
-        {/* Header */}
-        <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
-          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1.25rem' }}>
-            <img src="/escudo-ivd.png" alt="IVD" width={56} height={56} style={{ objectFit: "contain", display: "block" }} />
+        <div style={{ textAlign: 'center', marginBottom: 'var(--space-2xl)' }}>
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 'var(--space-lg)' }}>
+            <img src="/escudo-ivd.svg" alt="" width={64} height={64} style={{ objectFit: 'contain', display: 'block' }} aria-hidden="true" />
           </div>
-          <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '1.5rem', color: 'white', marginBottom: '0.35rem' }}>
+          <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '1.75rem', color: 'white', marginBottom: 'var(--space-xs)' }}>
             Acceso docentes
           </h1>
-          <p style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.45)' }}>
+          <p style={{ fontSize: '0.9375rem', color: 'rgba(255,255,255,0.5)' }}>
             RevistaIVD · Área de Ciencias Naturales
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-lg)' }}>
           <div>
-            <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, color: 'rgba(255,255,255,0.6)', letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: '0.5rem' }}>
+            <label htmlFor="username" style={{ display: 'block', fontSize: '0.7rem', fontWeight: 700, color: 'rgba(255,255,255,0.5)', letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: '0.5rem' }}>
               Usuario
             </label>
             <input
-              type="text"
-              value={username}
-              onChange={e => setUsername(e.target.value)}
-              placeholder="ej: quimica"
-              required
-              autoComplete="username"
-              style={{
-                width: '100%', padding: '12px 16px',
-                background: 'rgba(255,255,255,0.07)',
-                border: '1px solid rgba(255,255,255,0.15)',
-                borderRadius: 10, color: 'white', fontSize: '0.95rem',
-                outline: 'none', fontFamily: 'var(--font-body)',
-                transition: 'border-color 0.2s',
-              }}
-              onFocus={e => (e.target.style.borderColor = 'var(--ivd-red)')}
-              onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.15)')}
+              id="username" type="text" value={username} onChange={e => setUsername(e.target.value)}
+              placeholder="ej: quimica" required autoComplete="username"
+              style={inputStyle}
+              onFocus={e => { e.target.style.borderColor = 'var(--ivd-red)'; e.target.style.boxShadow = '0 0 0 3px rgba(200,16,46,0.15)' }}
+              onBlur={e => { e.target.style.borderColor = 'rgba(255,255,255,0.12)'; e.target.style.boxShadow = 'none' }}
             />
           </div>
 
           <div>
-            <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, color: 'rgba(255,255,255,0.6)', letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: '0.5rem' }}>
+            <label htmlFor="password" style={{ display: 'block', fontSize: '0.7rem', fontWeight: 700, color: 'rgba(255,255,255,0.5)', letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: '0.5rem' }}>
               Contraseña
             </label>
             <div style={{ position: 'relative' }}>
               <input
-                type={showPw ? 'text' : 'password'}
-                value={password}
-                onChange={e => setPassword(e.target.value)}
-                required
-                autoComplete="current-password"
-                style={{
-                  width: '100%', padding: '12px 44px 12px 16px',
-                  background: 'rgba(255,255,255,0.07)',
-                  border: '1px solid rgba(255,255,255,0.15)',
-                  borderRadius: 10, color: 'white', fontSize: '0.95rem',
-                  outline: 'none', fontFamily: 'var(--font-body)',
-                  transition: 'border-color 0.2s',
-                }}
-                onFocus={e => (e.target.style.borderColor = 'var(--ivd-red)')}
-                onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.15)')}
+                id="password" type={showPw ? 'text' : 'password'} value={password} onChange={e => setPassword(e.target.value)}
+                required autoComplete="current-password"
+                style={{ ...inputStyle, paddingRight: '3.5rem' }}
+                onFocus={e => { e.target.style.borderColor = 'var(--ivd-red)'; e.target.style.boxShadow = '0 0 0 3px rgba(200,16,46,0.15)' }}
+                onBlur={e => { e.target.style.borderColor = 'rgba(255,255,255,0.12)'; e.target.style.boxShadow = 'none' }}
               />
               <button
-                type="button"
-                onClick={() => setShowPw(!showPw)}
-                style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.4)', padding: 4 }}
+                type="button" onClick={() => setShowPw(!showPw)}
+                style={{ position: 'absolute', right: '0.875rem', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.4)', padding: '0.25rem', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                aria-label={showPw ? 'Ocultar contraseña' : 'Mostrar contraseña'}
               >
-                {showPw ? <EyeOff size={18} /> : <Eye size={18} />}
+                {showPw ? <EyeOff size={20} /> : <Eye size={20} />}
               </button>
             </div>
           </div>
 
           {error && (
-            <div style={{ padding: '10px 14px', background: 'rgba(200,16,46,0.15)', border: '1px solid rgba(200,16,46,0.4)', borderRadius: 8, color: '#ff6b6b', fontSize: '0.85rem' }}>
-              {error}
+            <div style={{ padding: 'var(--space-md) var(--space-lg)', background: 'rgba(200,16,46,0.15)', border: '1px solid rgba(200,16,46,0.3)', borderRadius: 'var(--radius-md)', color: '#FCA5A5', fontSize: '0.875rem', display: 'flex', alignItems: 'flex-start', gap: '0.5rem' }}>
+              <AlertCircle size={18} style={{ flexShrink: 0, marginTop: '0.125rem' }} />
+              <span>{error}</span>
             </div>
           )}
 
-          <button
-            type="submit"
-            disabled={loading}
-            style={{
-              padding: '13px', background: loading ? 'rgba(200,16,46,0.5)' : 'var(--ivd-red)',
-              color: 'white', border: 'none', borderRadius: 10, fontWeight: 700,
-              fontSize: '0.95rem', cursor: loading ? 'not-allowed' : 'pointer',
-              transition: 'background 0.2s', display: 'flex', alignItems: 'center',
-              justifyContent: 'center', gap: '0.5rem', fontFamily: 'var(--font-body)',
-            }}
-          >
+          <button type="submit" disabled={loading} className="btn btn-primary btn-lg" style={{ width: '100%', justifyContent: 'center' }}>
             <LogIn size={18} />
-            {loading ? 'Ingresando...' : 'Ingresar'}
+            {loading ? 'Ingresando…' : 'Ingresar'}
           </button>
         </form>
 
-        <p style={{ textAlign: 'center', marginTop: '2rem', fontSize: '0.78rem', color: 'rgba(255,255,255,0.25)' }}>
+        <p style={{ textAlign: 'center', marginTop: 'var(--space-xl)', fontSize: '0.8125rem', color: 'rgba(255,255,255,0.3)' }}>
           Solo para docentes del área · No hay registro público
         </p>
       </div>

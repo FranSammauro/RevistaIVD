@@ -31,71 +31,51 @@ export default function Navbar() {
   }, [])
 
   useEffect(() => {
-    const handler = () => setScrolled(window.scrollY > 40)
-    handler() // run immediately on mount/navigate
+    const handler = () => setScrolled(window.scrollY > 20)
+    handler()
     window.addEventListener('scroll', handler, { passive: true })
     return () => window.removeEventListener('scroll', handler)
   }, [pathname])
 
-  // Close menu on navigate
   useEffect(() => { setOpen(false) }, [pathname])
 
-  const bgStyle = lightMode
-    ? {
-        background: 'rgba(250,250,250,0.97)',
-        backdropFilter: 'blur(16px)',
-        WebkitBackdropFilter: 'blur(16px)',
-        borderBottom: '1px solid rgba(200,16,46,0.12)',
-        boxShadow: '0 2px 16px rgba(0,0,0,0.06)',
-      }
-    : {
-        background: 'transparent',
-        backdropFilter: 'none',
-        WebkitBackdropFilter: 'none',
-        borderBottom: 'none',
-        boxShadow: 'none',
-      }
-
-  const linkColor = lightMode ? 'var(--ivd-gray-dark)' : 'rgba(255,255,255,0.85)'
-  const logoTextColor = lightMode ? 'var(--ivd-black)' : 'white'
-
   return (
-    <header style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, transition: 'background 0.3s, box-shadow 0.3s', ...bgStyle }}>
-      <nav style={{
-        maxWidth: 1200, margin: '0 auto', padding: '0 1.25rem',
-        height: 64, display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-      }}>
-        {/* Logo */}
-        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', textDecoration: 'none', flexShrink: 0 }}>
-          <div style={{ width: 36, height: 36, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <img
-              src="/escudo-ivd.png"
-              alt="Escudo IVD"
-              width={36}
-              height={36}
-              style={{ objectFit: 'contain', display: 'block', maxWidth: '100%' }}
-            />
-          </div>
+    <header
+      style={{
+        position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
+        transition: 'background var(--transition-base), box-shadow var(--transition-base), border-color var(--transition-base)',
+        background: lightMode ? 'rgba(250,250,248,0.92)' : 'transparent',
+        backdropFilter: lightMode ? 'blur(20px)' : 'none',
+        WebkitBackdropFilter: lightMode ? 'blur(20px)' : 'none',
+        borderBottom: lightMode ? '1px solid var(--ivd-gray-200)' : 'none',
+        boxShadow: lightMode ? 'var(--shadow-sm)' : 'none',
+      }}
+    >
+      <nav className="container-main" style={{ height: 68, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <Link href="/" className="nav-brand" style={{
+          display: 'flex', alignItems: 'center', gap: '0.6rem', textDecoration: 'none', flexShrink: 0,
+        }} aria-label="RevistaIVD - Inicio">
+          <img src="/escudo-ivd.svg" alt="" width={38} height={38} style={{ display: 'block' }} aria-hidden="true" />
           <span style={{
-            fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '1.1rem',
-            letterSpacing: '-0.02em', color: logoTextColor, transition: 'color 0.3s',
-            whiteSpace: 'nowrap',
+            fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '1.125rem',
+            letterSpacing: '-0.02em', color: lightMode ? 'var(--ivd-black)' : 'var(--ivd-white)',
+            transition: 'color var(--transition-base)', whiteSpace: 'nowrap',
           }}>
             Revista<span style={{ color: 'var(--ivd-red)' }}>IVD</span>
           </span>
         </Link>
 
-        {/* Desktop links — hidden on mobile via inline style */}
         {!isMobile && (
-          <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
+          <div className="nav-links" style={{ display: 'flex', gap: '0.25rem', alignItems: 'center' }}>
             {NAV_LINKS.map(l => (
-              <Link key={l.href} href={l.href} style={{
-                color: linkColor, textDecoration: 'none',
-                fontSize: '0.82rem', fontWeight: 500,
-                letterSpacing: '0.03em', transition: 'color 0.2s', whiteSpace: 'nowrap',
+              <Link key={l.href} href={l.href} className="nav-link" style={{
+                color: lightMode ? 'var(--ivd-gray-700)' : 'rgba(255,255,255,0.85)',
+                textDecoration: 'none', fontSize: '0.8125rem', fontWeight: 500,
+                letterSpacing: '0.02em', padding: '0.5rem 0.875rem', borderRadius: 'var(--radius-sm)',
+                transition: 'all var(--transition-fast)', whiteSpace: 'nowrap',
               }}
-                onMouseEnter={e => (e.currentTarget.style.color = 'var(--ivd-red)')}
-                onMouseLeave={e => (e.currentTarget.style.color = linkColor)}
+                onMouseEnter={e => { e.currentTarget.style.color = 'var(--ivd-red)'; e.currentTarget.style.background = 'var(--ivd-red-soft)' }}
+                onMouseLeave={e => { e.currentTarget.style.color = lightMode ? 'var(--ivd-gray-700)' : 'rgba(255,255,255,0.85)'; e.currentTarget.style.background = 'transparent' }}
               >
                 {l.label}
               </Link>
@@ -103,55 +83,48 @@ export default function Navbar() {
           </div>
         )}
 
-        {/* Right side */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
           {!isMobile && <AuthButton lightMode={lightMode} />}
 
-          {/* Mobile hamburger — only rendered on mobile */}
           {isMobile && (
             <button
               onClick={() => setOpen(prev => !prev)}
+              className="focus-visible"
               style={{
                 background: 'none', border: 'none', cursor: 'pointer',
-                color: lightMode ? 'var(--ivd-black)' : 'white',
-                padding: '8px', borderRadius: 8,
+                color: lightMode ? 'var(--ivd-black)' : 'var(--ivd-white)',
+                padding: '0.5rem', borderRadius: 'var(--radius-sm)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                WebkitTapHighlightColor: 'transparent',
-                touchAction: 'manipulation',
+                WebkitTapHighlightColor: 'transparent', touchAction: 'manipulation',
               }}
-              aria-label="Abrir menú"
+              aria-label={open ? 'Cerrar menú' : 'Abrir menú'}
+              aria-expanded={open}
             >
-              {open ? <X size={26} /> : <Menu size={26} />}
+              {open ? <X size={24} /> : <Menu size={24} />}
             </button>
           )}
         </div>
       </nav>
 
-      {/* Mobile menu dropdown */}
       {isMobile && open && (
-        <div style={{
-          background: 'rgba(250,250,250,0.99)',
-          backdropFilter: 'blur(16px)',
-          WebkitBackdropFilter: 'blur(16px)',
-          borderTop: '1px solid rgba(200,16,46,0.12)',
-          padding: '0.25rem 1.25rem 1.25rem',
+        <div className="mobile-menu" style={{
+          background: 'rgba(250,250,248,0.98)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)',
+          borderTop: '1px solid var(--ivd-gray-200)', padding: '0.5rem var(--container-padding) 1.25rem',
+          animation: 'slideUp 0.3s ease forwards',
         }}>
           {NAV_LINKS.map(l => (
-            <Link
-              key={l.href}
-              href={l.href}
-              onClick={() => setOpen(false)}
-              style={{
-                display: 'block', padding: '0.85rem 0',
-                color: 'var(--ivd-gray-dark)', textDecoration: 'none',
-                fontWeight: 500, fontSize: '1rem',
-                borderBottom: '1px solid rgba(0,0,0,0.06)',
-              }}
+            <Link key={l.href} href={l.href} onClick={() => setOpen(false)} className="focus-visible" style={{
+              display: 'block', padding: '0.875rem 0', color: 'var(--ivd-gray-700)', textDecoration: 'none',
+              fontWeight: 500, fontSize: '1rem', borderBottom: '1px solid var(--ivd-gray-100)',
+              transition: 'color var(--transition-fast)', textWrap: 'balance',
+            }}
+              onMouseEnter={e => e.currentTarget.style.color = 'var(--ivd-red)'}
+              onMouseLeave={e => e.currentTarget.style.color = 'var(--ivd-gray-700)'}
             >
               {l.label}
             </Link>
           ))}
-          <div style={{ paddingTop: '1rem' }}>
+          <div style={{ paddingTop: '1rem', borderTop: '1px solid var(--ivd-gray-200)' }}>
             <AuthButton lightMode={true} />
           </div>
         </div>

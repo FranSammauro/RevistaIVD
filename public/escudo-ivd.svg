@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 224" fill="none">
+  <!-- Escudo exterior -->
+  <path d="M100 8C52.5 8 14 46.5 14 94c0 28.5 18.5 52 38 62.5C67.5 172 86 184 100 216c14-32 32.5-44 48-59.5C167.5 146 186 122.5 186 94c0-47.5-38.5-86-86-86z" stroke="#C8102E" stroke-width="4"/>
+  <path d="M100 14C55.5 14 20 49.5 20 94c0 26.5 15.5 48 32 57.5C67 167.5 84 178 100 208c16-30 33-40.5 48-56.5C164.5 142 180 120.5 180 94c0-44.5-35.5-80-80-80z" fill="#0D0D0D"/>
+
+  <!-- Cruz central -->
+  <path d="M100 44V156M68 100h64" stroke="#C8102E" stroke-width="8" stroke-linecap="round"/>
+
+  <!-- Paloma (simplificada) -->
+  <path d="M100 74c-8 0-14 6-14 14s6 14 14 14 14-6 14-14-6-14-14-14zm0 8c3.3 0 6 2.7 6 6s-2.7 6-6 6-6-2.7-6-6 2.7-6 6-6z" fill="#C8102E"/>
+
+  <!-- Libro abierto base -->
+  <path d="M54 164h92" stroke="#C8102E" stroke-width="3" stroke-linecap="round"/>
+  <path d="M54 164v20M146 164v20M54 184h92" stroke="#C8102E" stroke-width="3" stroke-linecap="round"/>
+
+  <!-- Detalle llama/conocimiento -->
+  <path d="M100 132c-6-4-10-10-10-18s4-14 10-18c6-4 14-4 20 0 6 4 10 10 10 18s-4 14-10 18c-6 4-14 4-20 0z" fill="#C8102E" opacity="0.2"/>
+  <path d="M100 118c-4-3-7-7-7-12s3-9 7-9c4-3 9-3 13 0 4 3 7 7 7 12s-3 9-7 9c-4 3-9 3-13 0z" fill="#C8102E"/>
+
+  <!-- Año / IVD pequeño -->
+  <text x="100" y="204" text-anchor="middle" font-family="Georgia, serif" font-size="10" font-weight="700" fill="#C8102E" letter-spacing="2">IVD</text>
+</svg>

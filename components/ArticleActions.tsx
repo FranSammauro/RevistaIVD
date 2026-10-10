@@ -1,7 +1,7 @@
 'use client'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Pencil, Trash2 } from 'lucide-react'
+import { Pencil, Trash2, AlertCircle, CheckCircle, X } from 'lucide-react'
 
 export default function ArticleActions({ slug }: { slug: string }) {
   const router = useRouter()
@@ -23,43 +23,60 @@ export default function ArticleActions({ slug }: { slug: string }) {
   }
 
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
-      <span style={{ fontSize: '0.72rem', color: 'var(--ivd-gray-mid)', fontFamily: 'var(--font-mono)' }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)', flexWrap: 'wrap' }}>
+      <span style={{ fontSize: '0.7rem', color: 'var(--ivd-gray-500)', fontFamily: 'var(--font-mono)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
         Acciones:
       </span>
-      <a href={`/publicar/editar/${slug}`} style={{
-        display: 'inline-flex', alignItems: 'center', gap: 5,
-        padding: '7px 14px', borderRadius: 8,
-        border: '1px solid var(--ivd-gray)',
-        color: 'var(--ivd-gray-dark)', textDecoration: 'none',
-        fontSize: '0.8rem', fontWeight: 600, transition: 'all 0.2s',
+      <a href={`/publicar/editar/${slug}`} className="focus-visible" style={{
+        display: 'inline-flex', alignItems: 'center', gap: '0.375rem',
+        padding: '0.5rem 1rem', borderRadius: 'var(--radius-md)',
+        border: '1px solid var(--ivd-gray-200)', color: 'var(--ivd-gray-700)', textDecoration: 'none',
+        fontSize: '0.8125rem', fontWeight: 600, fontFamily: 'var(--font-body)',
+        background: 'var(--ivd-white)', transition: 'all var(--transition-fast)',
       }}
-        onMouseEnter={e => { const el = e.currentTarget; el.style.borderColor = '#1A4A8A'; el.style.color = '#1A4A8A' }}
-        onMouseLeave={e => { const el = e.currentTarget; el.style.borderColor = 'var(--ivd-gray)'; el.style.color = 'var(--ivd-gray-dark)' }}
+        onMouseEnter={e => { e.currentTarget.style.borderColor = '#1A4A8A'; e.currentTarget.style.color = '#1A4A8A'; e.currentTarget.style.background = '#EFF6FF' }}
+        onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--ivd-gray-200)'; e.currentTarget.style.color = 'var(--ivd-gray-700)'; e.currentTarget.style.background = 'var(--ivd-white)' }}
       >
-        <Pencil size={13} /> Editar
+        <Pencil size={14} /> Editar
       </a>
-      <button onClick={handleDelete} disabled={deleting} style={{
-        display: 'inline-flex', alignItems: 'center', gap: 5,
-        padding: '7px 14px', borderRadius: 8,
-        border: `1px solid ${confirming ? '#C8102E' : 'var(--ivd-gray)'}`,
-        background: confirming ? '#C8102E' : 'transparent',
-        color: confirming ? 'white' : 'var(--ivd-gray-dark)',
-        fontSize: '0.8rem', fontWeight: 600,
-        cursor: deleting ? 'not-allowed' : 'pointer',
-        transition: 'all 0.2s', fontFamily: 'var(--font-body)',
-      }}
-        onMouseEnter={e => { if (!confirming) { const el = e.currentTarget; el.style.borderColor = '#C8102E'; el.style.color = '#C8102E' } }}
-        onMouseLeave={e => { if (!confirming) { const el = e.currentTarget; el.style.borderColor = 'var(--ivd-gray)'; el.style.color = 'var(--ivd-gray-dark)' } }}
+      <button
+        onClick={handleDelete}
+        disabled={deleting}
+        className="focus-visible"
+        style={{
+          display: 'inline-flex', alignItems: 'center', gap: '0.375rem',
+          padding: '0.5rem 1rem', borderRadius: 'var(--radius-md)',
+          border: `1px solid ${confirming ? '#C8102E' : 'var(--ivd-gray-200)'}`,
+          background: confirming ? '#C8102E' : 'var(--ivd-white)',
+          color: confirming ? 'white' : 'var(--ivd-gray-700)',
+          fontSize: '0.8125rem', fontWeight: 600, fontFamily: 'var(--font-body)',
+          cursor: deleting ? 'not-allowed' : 'pointer', transition: 'all var(--transition-fast)',
+        }}
+        onMouseEnter={e => {
+          if (!confirming && !deleting) {
+            e.currentTarget.style.borderColor = '#C8102E'
+            e.currentTarget.style.color = '#C8102E'
+            e.currentTarget.style.background = '#FEF2F2'
+          }
+        }}
+        onMouseLeave={e => {
+          if (!confirming && !deleting) {
+            e.currentTarget.style.borderColor = 'var(--ivd-gray-200)'
+            e.currentTarget.style.color = 'var(--ivd-gray-700)'
+            e.currentTarget.style.background = 'var(--ivd-white)'
+          }
+        }}
       >
-        <Trash2 size={13} />
-        {deleting ? 'Eliminando...' : confirming ? '¿Confirmar?' : 'Eliminar'}
+        <Trash2 size={14} />
+        {deleting ? 'Eliminando…' : confirming ? '¿Confirmar?' : 'Eliminar'}
       </button>
       {confirming && !deleting && (
-        <button onClick={() => setConfirming(false)} style={{
-          fontSize: '0.78rem', color: 'var(--ivd-gray-mid)', background: 'none',
-          border: 'none', cursor: 'pointer', fontFamily: 'var(--font-body)', textDecoration: 'underline',
-        }}>Cancelar</button>
+        <button onClick={() => setConfirming(false)} className="focus-visible" style={{
+          fontSize: '0.8125rem', color: 'var(--ivd-gray-500)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-body)',
+          display: 'inline-flex', alignItems: 'center', gap: '0.25rem', padding: '0.5rem 0',
+        }}>
+          <X size={14} /> Cancelar
+        </button>
       )}
     </div>
   )

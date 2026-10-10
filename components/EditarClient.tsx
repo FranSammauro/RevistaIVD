@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { getCategoryIcon } from '@/components/icons'
 import { CATEGORIES } from '@/lib/types'
 import type { ArticleMeta } from '@/lib/types'
-import { LogOut, Save, FileText, Star, Clock, ArrowLeft } from 'lucide-react'
+import { LogOut, Save, FileText, Star, Clock, ArrowLeft, AlertCircle, CheckCircle } from 'lucide-react'
 
 interface User { username: string; displayName: string; category: string }
 interface Article extends ArticleMeta { content: string }
@@ -22,6 +22,7 @@ export default function EditarClient({ user, article }: { user: User; article: A
   const [error, setError] = useState('')
 
   const cat = CATEGORIES[user.category]
+  const categoryColor = cat?.color || '#C8102E'
 
   async function handleLogout() {
     await fetch('/api/logout', { method: 'POST' })
@@ -41,8 +42,8 @@ export default function EditarClient({ user, article }: { user: User; article: A
       })
       const data = await res.json()
       if (!res.ok) { setError(data.error); return }
-      setSuccess('¡Guardado!')
-      setTimeout(() => router.push(`/articulos/${data.slug ?? article.slug}`), 1000)
+      setSuccess('¡Cambios guardados!')
+      setTimeout(() => router.push(`/articulos/${data.slug ?? article.slug}`), 1200)
     } catch {
       setError('Error al guardar.')
     } finally {
@@ -51,120 +52,147 @@ export default function EditarClient({ user, article }: { user: User; article: A
   }
 
   const inputStyle = {
-    width: '100%', padding: '10px 14px',
-    border: '1px solid var(--ivd-gray)', borderRadius: 8,
-    outline: 'none', color: 'var(--ivd-black)', fontFamily: 'var(--font-body)',
+    width: '100%', padding: '0.75rem 1rem', fontSize: '0.9375rem', fontFamily: 'var(--font-body)',
+    background: 'var(--ivd-white)', border: '1px solid var(--ivd-gray-200)', borderRadius: 'var(--radius-md)',
+    color: 'var(--ivd-black)', outline: 'none', transition: 'all var(--transition-fast)',
   }
+
+  const textareaStyle: React.CSSProperties = {
+    ...inputStyle, resize: 'vertical', lineHeight: 1.7, fontFamily: 'var(--font-mono)', fontSize: '0.875rem',
+  }
+
   const labelStyle = {
-    display: 'block', fontSize: '0.78rem', fontWeight: 700 as const,
-    color: 'var(--ivd-red)', letterSpacing: '0.08em',
-    textTransform: 'uppercase' as const, marginBottom: '0.6rem',
+    display: 'block', fontSize: '0.7rem', fontWeight: 700, color: 'var(--ivd-red)',
+    letterSpacing: '0.06em', textTransform: 'uppercase', marginBottom: '0.5rem',
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--ivd-gray)', paddingTop: 80 }}>
-      <div style={{ background: 'var(--ivd-black)', borderBottom: '1px solid rgba(200,16,46,0.2)', padding: '1rem 1.25rem' }}>
-        <div style={{ maxWidth: 900, margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--ivd-gray-50)', paddingTop: 96 }}>
+      <header className="glass-dark" style={{
+        position: 'sticky', top: 0, zIndex: 50, borderBottom: '1px solid rgba(200,16,46,0.15)',
+        padding: 'var(--space-md) var(--container-padding)',
+      }}>
+        <div className="container-wide" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 'var(--space-md)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <img src="/escudo-ivd.png" alt="IVD" width={32} height={32} style={{ objectFit: 'contain', display: 'block' }} />
+            <img src="/escudo-ivd.svg" alt="" width={36} height={36} style={{ display: 'block' }} aria-hidden="true" />
             <div>
-              <div style={{ fontFamily: 'var(--font-display)', fontWeight: 700, color: 'white', fontSize: '1rem' }}>
+              <div style={{ fontFamily: 'var(--font-display)', fontWeight: 700, color: 'white', fontSize: '1.0625rem' }}>
                 Revista<span style={{ color: 'var(--ivd-red)' }}>IVD</span> · Editar
               </div>
-              <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.45)', display: 'flex', alignItems: 'center', gap: 5 }}>
-                <span style={{ color: cat?.color }}>{getCategoryIcon(user.category, 11, cat?.color)}</span>
+              <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)', display: 'flex', alignItems: 'center', gap: '0.375rem' }}>
+                <span style={{ color: cat?.color }}>{getCategoryIcon(user.category, 12, cat?.color || 'currentColor')}</span>
                 {user.displayName}
               </div>
             </div>
           </div>
           <div style={{ display: 'flex', gap: '0.5rem' }}>
-            <Link href={`/articulos/${article.slug}`} style={{
-              display: 'flex', alignItems: 'center', gap: 5, color: 'rgba(255,255,255,0.55)',
-              textDecoration: 'none', fontSize: '0.82rem', border: '1px solid rgba(255,255,255,0.12)',
-              borderRadius: 8, padding: '7px 12px',
-            }}>
-              <ArrowLeft size={14} /> Volver
+            <Link href={`/articulos/${article.slug}`} className="focus-visible" style={{
+              display: 'flex', alignItems: 'center', gap: '0.375rem',
+              color: 'rgba(255,255,255,0.7)', textDecoration: 'none', fontSize: '0.8125rem',
+              padding: '0.5rem 0.875rem', borderRadius: 'var(--radius-md)',
+              border: '1px solid rgba(255,255,255,0.15)', background: 'rgba(255,255,255,0.05)',
+              fontFamily: 'var(--font-body)', whiteSpace: 'nowrap', transition: 'all var(--transition-fast)',
+            }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; e.currentTarget.style.color = 'white'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.3)' }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; e.currentTarget.style.color = 'rgba(255,255,255,0.7)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)' }}
+            >
+              <ArrowLeft size={15} /> Ver artículo
             </Link>
-            <button onClick={handleLogout} style={{
-              display: 'flex', alignItems: 'center', gap: 5, background: 'none',
-              border: '1px solid rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.6)',
-              borderRadius: 8, padding: '7px 12px', cursor: 'pointer',
-              fontSize: '0.82rem', fontFamily: 'var(--font-body)',
-            }}>
-              <LogOut size={14} /> Salir
+            <button onClick={handleLogout} className="focus-visible" style={{
+              display: 'flex', alignItems: 'center', gap: '0.375rem', background: 'none',
+              border: '1px solid rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.7)',
+              borderRadius: 'var(--radius-md)', padding: '0.5rem 0.875rem', cursor: 'pointer',
+              fontSize: '0.8125rem', fontFamily: 'var(--font-body)', whiteSpace: 'nowrap',
+              transition: 'all var(--transition-fast)',
+            }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; e.currentTarget.style.color = 'white'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.3)' }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'none'; e.currentTarget.style.color = 'rgba(255,255,255,0.7)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)' }}
+            >
+              <LogOut size={15} /> Salir
             </button>
           </div>
         </div>
-      </div>
+      </header>
 
-      <div style={{ maxWidth: 900, margin: '2rem auto', padding: '0 1.25rem' }}>
-        <div style={{ marginBottom: '1.75rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.25rem' }}>
+      <main className="container-main" style={{ padding: 'var(--space-3xl) var(--container-padding) var(--space-4xl)' }}>
+        <div style={{ marginBottom: 'var(--space-2xl)', maxWidth: 800 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: 'var(--space-sm)' }}>
             <div className="red-line" />
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: 'var(--ivd-red)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Editando artículo</span>
+            <span className="font-caption">Editando artículo</span>
           </div>
-          <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: 'clamp(1.5rem, 4vw, 2rem)', color: 'var(--ivd-black)' }}>
+          <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: 'clamp(1.75rem, 4vw, 2.5rem)', color: 'var(--ivd-black)' }}>
             {title || 'Sin título'}
           </h1>
         </div>
 
-        <form onSubmit={handleSave}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-            <div style={{ background: 'white', borderRadius: 12, padding: '1.25rem', border: '1px solid var(--ivd-gray)' }}>
-              <label style={labelStyle}><FileText size={13} style={{ display: 'inline', marginRight: 5 }} />Título *</label>
-              <input value={title} onChange={e => setTitle(e.target.value)} required
-                style={{ ...inputStyle, fontSize: '1.05rem', fontFamily: 'var(--font-display)', fontWeight: 600 }}
-                onFocus={e => (e.target.style.borderColor = 'var(--ivd-red)')}
-                onBlur={e => (e.target.style.borderColor = 'var(--ivd-gray)')}
+        <form onSubmit={handleSave} style={{ maxWidth: 800 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-lg)' }}>
+
+            <div className="card" style={{ padding: 'var(--space-lg)' }}>
+              <label style={labelStyle}><FileText size={14} style={{ display: 'inline-block', marginRight: '0.375rem', verticalAlign: '-1px' }} /> Título *</label>
+              <input
+                value={title} onChange={e => setTitle(e.target.value)} required
+                style={{ ...inputStyle, fontSize: '1.0625rem', fontFamily: 'var(--font-display)', fontWeight: 600 }}
               />
             </div>
 
-            <div style={{ background: 'white', borderRadius: 12, padding: '1.25rem', border: '1px solid var(--ivd-gray)' }}>
+            <div className="card" style={{ padding: 'var(--space-lg)' }}>
               <label style={labelStyle}>Resumen *</label>
-              <textarea value={excerpt} onChange={e => setExcerpt(e.target.value)} required rows={3}
-                style={{ ...inputStyle, resize: 'vertical', lineHeight: 1.6 }}
-                onFocus={e => (e.target.style.borderColor = 'var(--ivd-red)')}
-                onBlur={e => (e.target.style.borderColor = 'var(--ivd-gray)')}
-              />
+              <textarea value={excerpt} onChange={e => setExcerpt(e.target.value)} required rows={3} style={textareaStyle} />
             </div>
 
-            <div style={{ background: 'white', borderRadius: 12, padding: '1.25rem', border: '1px solid var(--ivd-gray)' }}>
+            <div className="card" style={{ padding: 'var(--space-lg)' }}>
               <label style={labelStyle}>Contenido (Markdown) *</label>
-              <textarea value={content} onChange={e => setContent(e.target.value)} required rows={20}
-                style={{ ...inputStyle, fontFamily: 'var(--font-mono)', fontSize: '0.88rem', resize: 'vertical', lineHeight: 1.7 }}
-                onFocus={e => (e.target.style.borderColor = 'var(--ivd-red)')}
-                onBlur={e => (e.target.style.borderColor = 'var(--ivd-gray)')}
-              />
+              <div style={{ marginBottom: '0.5rem', padding: 'var(--space-sm) var(--space-md)', background: 'var(--ivd-gray-50)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--ivd-gray-100)', fontSize: '0.75rem', color: 'var(--ivd-gray-600)' }}>
+                <strong>Referencia rápida:</strong>{' '}
+                <code style={{ background: 'var(--ivd-white)', padding: '0.125rem 0.375rem', borderRadius: '3px', margin: '0 0.125rem' }}>## Título</code>
+                <code style={{ background: 'var(--ivd-white)', padding: '0.125rem 0.375rem', borderRadius: '3px', margin: '0 0.125rem' }}>**negrita**</code>
+                <code style={{ background: 'var(--ivd-white)', padding: '0.125rem 0.375rem', borderRadius: '3px', margin: '0 0.125rem' }}>*itálica*</code>
+                <code style={{ background: 'var(--ivd-white)', padding: '0.125rem 0.375rem', borderRadius: '3px', margin: '0 0.125rem' }}>{'>>'} cita</code>
+                <code style={{ background: 'var(--ivd-white)', padding: '0.125rem 0.375rem', borderRadius: '3px', margin: '0 0.125rem' }}>• lista</code>
+                <code style={{ background: 'var(--ivd-white)', padding: '0.125rem 0.375rem', borderRadius: '3px', margin: '0 0.125rem' }}>```código```</code>
+              </div>
+              <textarea value={content} onChange={e => setContent(e.target.value)} required rows={24} style={{ ...textareaStyle, minHeight: 480 }} />
             </div>
 
-            <div style={{ background: 'white', borderRadius: 12, padding: '1.25rem', border: '1px solid var(--ivd-gray)', display: 'flex', gap: '2rem', flexWrap: 'wrap', alignItems: 'center' }}>
+            <div className="card" style={{ padding: 'var(--space-lg)', display: 'flex', gap: 'var(--space-xl)', flexWrap: 'wrap', alignItems: 'center' }}>
               <div>
-                <label style={labelStyle}><Clock size={13} style={{ display: 'inline', marginRight: 5 }} />Lectura (min)</label>
+                <label style={labelStyle}><Clock size={14} style={{ display: 'inline-block', marginRight: '0.375rem', verticalAlign: '-1px' }} /> Lectura (min)</label>
                 <input type="number" min={1} max={30} value={readTime} onChange={e => setReadTime(Number(e.target.value))}
-                  style={{ width: 70, padding: '8px 10px', border: '1px solid var(--ivd-gray)', borderRadius: 8, fontSize: '0.95rem', outline: 'none', textAlign: 'center' }}
+                  style={{ width: 80, padding: '0.625rem 0.875rem', border: '1px solid var(--ivd-gray-200)', borderRadius: 'var(--radius-md)', fontSize: '0.9375rem', fontFamily: 'var(--font-body)', outline: 'none', textAlign: 'center', background: 'var(--ivd-white)', color: 'var(--ivd-black)' }}
                 />
               </div>
-              <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', padding: '0.5rem 0.875rem', background: 'var(--ivd-gray-50)', borderRadius: 'var(--radius-md)', border: '1px solid var(--ivd-gray-200)' }}>
                 <input type="checkbox" checked={featured} onChange={e => setFeatured(e.target.checked)}
                   style={{ width: 18, height: 18, accentColor: 'var(--ivd-red)', cursor: 'pointer' }}
                 />
-                <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--ivd-gray-dark)', display: 'flex', alignItems: 'center', gap: 5 }}>
-                  <Star size={14} color="var(--ivd-red)" /> Destacado
+                <span style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--ivd-gray-700)', display: 'flex', alignItems: 'center', gap: '0.375rem' }}>
+                  <Star size={15} color="var(--ivd-red)" /> Destacado en portada
                 </span>
               </label>
             </div>
 
-            {error && <div style={{ padding: '12px 16px', background: '#fff0f0', border: '1px solid #ffcccc', borderRadius: 10, color: '#cc0000', fontSize: '0.88rem' }}>⚠️ {error}</div>}
-            {success && <div style={{ padding: '12px 16px', background: '#f0fff4', border: '1px solid #b3e6c5', borderRadius: 10, color: '#1a7a3a', fontSize: '0.88rem' }}>✅ {success}</div>}
+            {error && (
+              <div style={{ padding: 'var(--space-md) var(--space-lg)', background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: 'var(--radius-md)', color: '#991B1B', fontSize: '0.875rem', display: 'flex', alignItems: 'flex-start', gap: '0.5rem' }}>
+                <AlertCircle size={18} style={{ flexShrink: 0, marginTop: '0.125rem' }} />
+                <span>{error}</span>
+              </div>
+            )}
+            {success && (
+              <div style={{ padding: 'var(--space-md) var(--space-lg)', background: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: 'var(--radius-md)', color: '#166534', fontSize: '0.875rem', display: 'flex', alignItems: 'flex-start', gap: '0.5rem' }}>
+                <CheckCircle size={18} style={{ flexShrink: 0, marginTop: '0.125rem' }} />
+                <span>{success}</span>
+              </div>
+            )}
 
-            <button type="submit" disabled={saving}
-              style={{ padding: '13px 28px', background: saving ? 'rgba(200,16,46,0.5)' : 'var(--ivd-red)', color: 'white', border: 'none', borderRadius: 10, fontWeight: 700, fontSize: '0.95rem', cursor: saving ? 'not-allowed' : 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem', fontFamily: 'var(--font-body)', alignSelf: 'flex-start' }}>
-              <Save size={16} />
-              {saving ? 'Guardando...' : 'Guardar cambios'}
+            <button type="submit" disabled={saving} className="btn btn-primary btn-lg" style={{ alignSelf: 'flex-start', minWidth: 200 }}>
+              <Save size={18} />
+              {saving ? 'Guardando…' : 'Guardar cambios'}
             </button>
+
           </div>
         </form>
-      </div>
+      </main>
     </div>
   )
 }
